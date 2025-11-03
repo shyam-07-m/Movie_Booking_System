@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Namma Cinemas - Movies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(to right, #1d2b64, #f8cdda);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 30px;
+            background-color: #111;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        td button {
+            padding: 8px 16px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        td button:hover {
+            background-color: #218838;
+        }
+
+        .nav {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .nav a:hover {
+            background-color: #0056b3;
+        }
+
+        .popup {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            margin: 20px auto;
+            text-align: center;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .popup.error {
+            background-color: #dc3545;
+        }
+    </style>
+
+    <script>
+        // Display the popup if there's a message
+        function showPopup(message, isError = false) {
+            const popup = document.getElementById("popup");
+            popup.innerText = message;
+            popup.classList.remove("error");
+            if (isError) popup.classList.add("error");
+            popup.style.display = "block";
+            setTimeout(() => {
+                popup.style.display = "none";
+            }, 4000);
+        }
+    </script>
+</head>
+<body>
+
+<div class="title">🎬 Namma Cinemas - Available Movies</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div id="popup" class="popup"></div>
+        <script>
+            {% for category, message in messages %}
+                showPopup("{{ message }}", {{ 'true' if category == 'error' else 'false' }});
+            {% endfor %}
+        </script>
+    {% endif %}
+{% endwith %}
+
+<table>
+    <tr>
+        <th>Movie Name</th>
+        <th>Available Seats</th>
+        <th>Action</th>
+    </tr>
+    {% for movie in movies %}
+    <tr>
+        <td>{{ movie[1] }}</td>
+        <td>{{ movie[2] }}</td>
+        <td>
+            <form action="/book/{{ movie[0] }}" method="POST">
+                <input type="number" name="seats" min="1" max="{{ movie[2] }}" required>
+                <button type="submit">Book</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div class="nav">
+    <a href="/mybookings">🎟️ My Bookings</a>
+    <a href="/logout">Logout</a>
+</div>
+
+</body>
+</html>
